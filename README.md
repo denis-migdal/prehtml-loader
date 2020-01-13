@@ -1,3 +1,5 @@
+Enables to provide parameters for webpack html-loader interpolation.
+
 <h2 align="center">Install</h2>
 
 ```bash
@@ -143,11 +145,11 @@ module.exports = {
 
 ```html
 <!-- foo.html -->
-<div>${required('prehtml-loader?link=${scope.value + 10}!./subfoo.html')}</div>
+<div>${required('prehtml-loader?link=${scope.value + 10}!./subfoo.c.html')}</div>
 ```
 
 ```html
-<!-- subfoo.html -->
+<!-- subfoo.c.html -->
 <a>${scope.link}</a>
 ```
 
