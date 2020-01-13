@@ -1,0 +1,23 @@
+{
+  "name": "prehtml-loader",
+  "version": "1.0.0",
+  "description": "Enables to provide parameters for webpack html-loader interpolation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denis-migdal/prehtml-loader.git"
+  },
+  "keywords": [
+    "html-loader",
+    "interpolation"
+  ],
+  "author": "Denis Migdal",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/denis-migdal/prehtml-loader/issues"
+  },
+  "homepage": "https://github.com/denis-migdal/prehtml-loader#readme"
+}
