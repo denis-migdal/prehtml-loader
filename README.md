@@ -1,4 +1,14 @@
-Enables to provide parameters for webpack html-loader interpolation. Consequently, it enables to use html templates.
+<div align="center">
+  <img width="200" height="200"
+    src="https://worldvectorlogo.com/logos/html5.svg">
+  <a href="https://github.com/webpack/webpack">
+    <img width="200" height="200" vspace="" hspace="25"
+      src="https://worldvectorlogo.com/logos/webpack.svg">
+  </a>
+  <h1>PRE-HTML Loader</h1>
+  <p>Enables to provide parameters for webpack html-loader interpolation. Consequently, it enables to use html templates.<p>
+</div>
+
 
 <h2 align="center">Install</h2>
 
