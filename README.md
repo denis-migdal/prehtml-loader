@@ -10,13 +10,13 @@
 </div>
 
 
-<h2 align="center">Install</h2>
+<h2>Install</h2>
 
 ```bash
 npm i -D prehtml-loader
 ```
 
-<h2 align="center">Usage (standalone)</h2>
+<h2>Usage (standalone)</h2>
 
 <h3>Scope variables replacements</h3>
 
@@ -120,7 +120,7 @@ import "./foo.html?{'data':'world', value': 42}";
 ```
 
 
-<h2 align="center">Usage (with html-loader)</h2>
+<h2>Usage (with html-loader)</h2>
 
 <a href='https://github.com/webpack-contrib/html-loader'>html-loader</a> needs to be executed **after** prehtml-loader:
 
@@ -218,7 +218,7 @@ Example 3 (with import):
 import '!prehtml-loader?IMPORT_SUPPORT=false!./foo.html';
 ```
 
-<h2 align="center">Usage (with file-loader)</h2>
+<h2>Usage (with file-loader)</h2>
 
 <a href='https://github.com/webpack-contrib/file-loader'>file-loader</a> enables to create files into the output directory.
 We suggest to create new html files only when required in a .js file.

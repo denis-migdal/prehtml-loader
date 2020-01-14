@@ -1,6 +1,6 @@
 {
   "name": "prehtml-loader",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "Enables to provide parameters for webpack html-loader interpolation.",
   "main": "index.js",
   "scripts": {
