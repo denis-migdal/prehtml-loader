@@ -1,3 +1,13 @@
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+const { window } = new JSDOM();
+const { document } = (new JSDOM('')).window;
+global.document = document;
+
+const $ = require('jquery')(window);
+const fs = require('fs');
+
+
 var loaderUtils = require("loader-utils");
 
 function merge_loaders(query, k, path, loader_query) {
@@ -147,6 +157,33 @@ async function resolve(pthis, name, context = pthis.rootContext) {
 	return args;
 }
 
+async function prescript(pthis, html, options) {
+
+	let script = html.match(/<\!--PRESCRIPT: ('|")([^'"]*)('|") -->\n/sm);
+
+	if( ! script)
+		return html;
+
+	html = html.replace(script[0], '');
+
+	let file =await resolve(pthis, script[2]);
+
+	let script_content = fs.readFileSync(file, 'utf8');
+
+	eval(script_content);
+
+
+	let jhtml = '<div>' + html + '</div>';
+	jhtml = $.parseHTML(jhtml);
+
+
+	jhtml = __PRESCRIPT__( $(jhtml), options);
+
+	html = jhtml.html();
+
+	return html;
+}
+
 async function run(pthis, html, map, meta) {
 
 	let template = html.match(/<\!--TEMPLATE: ([^\n]*) -->\n(?:<\!--((?:\t}|[^}])*}\n)-->|)/sm);
@@ -174,6 +211,9 @@ async function run(pthis, html, map, meta) {
 	}
 
 	let options = parseOptions( pthis, getOptions(pthis) );
+
+	html = await prescript(pthis, html, options);
+
 	html = await parse(pthis, html, options);
 
 	return html;
