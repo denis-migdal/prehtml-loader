@@ -171,7 +171,10 @@ async function prescript(pthis, html, options) {
 	global.document = jhtml.window.document;
 	let $ = jquery_builder(jhtml.window);
 
-	__PRESCRIPT__( $, options);
+	__PRESCRIPT__( $, options, {
+		__file__: file,
+		__dir__: file.split('/').slice(0, -1).join('/')
+	});
 
 	html = jhtml.serialize();
 
