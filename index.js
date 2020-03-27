@@ -1,10 +1,5 @@
 const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
-const { window } = new JSDOM();
-const { document } = (new JSDOM('')).window;
-global.document = document;
-
-const $ = require('jquery')(window);
+const jquery_builder = require('jquery');
 const fs = require('fs');
 
 
@@ -172,14 +167,13 @@ async function prescript(pthis, html, options) {
 
 	eval(script_content);
 
+	let jhtml = new jsdom.JSDOM(html);
+	global.document = jhtml.window.document;
+	let $ = jquery_builder(jhtml.window);
 
-	let jhtml = '<div>' + html + '</div>';
-	jhtml = $.parseHTML(jhtml);
+	__PRESCRIPT__( $, options);
 
-
-	jhtml = __PRESCRIPT__( $(jhtml), options);
-
-	html = jhtml.html();
+	html = jhtml.serialize();
 
 	return html;
 }
