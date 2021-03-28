@@ -6,7 +6,8 @@
       src="https://worldvectorlogo.com/logos/webpack.svg">
   </a>
   <h1>PRE-HTML Loader</h1>
-  <p>Enables to provide parameters for webpack html-loader interpolation. Consequently, it enables to use html templates.<p>
+  <p>Easily creates static HTML pages at build time using templates, components, interpolations, and/or preprocessings.<br/>
+No JS required and nothing new to learn ;)<p>
 </div>
 
 
@@ -16,284 +17,221 @@
 npm i -D prehtml-loader
 ```
 
-<h2>Usage (standalone)</h2>
+<h2>Examples</h2>
 
-<h3>Scope variables replacements</h3>
+See the directory /examples for some more advanced usage examples.
 
-prehtml-loader replaces ${scope.*varname*} occurrences by values you provide to the loader:
+<h2>Basic usage</h2>
 
-```html
-<!-- foo.html -->
-<html>Hello ${scope.data}!<script>let x = ${scope.value};</script></html>
+<h3>Step 1: declare your website structure</h3>
+
 ```
-
-Example 1 (with require):
-```js
-<!-- foo.js -->
-require('!prehtml-loader?data=world&value=42!./foo.html');
-// => <html>Hello world!<script>let x = 42;</script></html>
-```
-
-Example 2 (with import):
-```js
-<!-- foo.js -->
-import '!prehtml-loader!./foo.html?value=42'
-// or import '!prehtml-loader?value=42!./foo.html'
-// => <html>Hello world!<script>let x = 42;</script></html>
-```
-
-Example 3 (with import and implicit loader):
-```js
-<!-- foo.js -->
-import './foo.html?value=42'
-// => <html>Hello world!<script>let x = 42;</script></html>
-```
-
-```js
-<!-- webpack.config.js -->
-var path = require('path');
-
+// ./src/main.js
 module.exports = {
 
-	module: {
-		rules: [{
-			test: /\.html$/,
-			use: ['prehtml-loader'],
+	pages_input_dir: './src/', // optionnal
+	pages_output_dir: './dist/pages/', // optionnal
+	pages: {
+		home: { __src: 'home', __args: { name: 'Denis Migdal' } },
+		error_404: { __src: 'error', __args: { code: 404 } },
+		error_403: { __src: 'error', __args: { code: 403 } },
+		demos: { // this is a directory
+			demo_1: {__src: 'demos/demo_1'},
+			demo_2: {__src: 'demos/demo_2'}
 		}
-	]},
-	entry: './foo.js',
-	output: {
-		path: path.resolve(__dirname, 'dist'),
-		filename: 'foo.bundle.js'
 	}
+
 };
 ```
+Tip: You can even dynamically generate your website structure from your project.
 
-<h3>Scope variables advanced replacements</h3>
+<h3>Step 2: tell webpack to build your pages</h3>
 
-prehtml-loader also replaces scope.*varname* occurrences inside string literals:
-
-```js
-require('prehtml-loader?value=42!./foo.html');
 ```
+// ./webpack.config.js
+let website = require('./src/main.js');
 
-Example 1:
-```html
-<!-- foo.html -->
-<script>let x = `${10 + ${scope.value}}`;</script>
-```
+let {build_website} = require('prehtml-loader/webpack_helper.js');
 
-Output: 
-```<script>let x = `${10 + 42}`;</script>```
+let html_config = (dst_path, src) => { // write here how you want HTML files to be build.
 
-Example 2:
-```html
-<!-- foo.html -->
-<script>let x = `${10 + scope.value}`;</script>
-```
-
-Output: 
-```<script>let x = `${10 + 42}`;</script>```
-
-<h3>Nested arguments</h3>
-
-prehtml-loader support nested arguments:
-
-```html
-<!-- foo.html -->
-${scope.data.value}
-${scope/data}
-```
-
-```js
-import './foo.html?data.value=42&data.data=world';
-// => 42
-// => {'value': 42, 'data':'world'}
-```
-
-<h3>JSON arguments</h3>
-
-You can also provide JSON arguments to prehtml-loader:
-```js
-<!-- foo.js -->
-import "./foo.html?{'data':'world', value': 42}";
-```
-
-
-<h2>Usage (with html-loader)</h2>
-
-<a href='https://github.com/webpack-contrib/html-loader'>html-loader</a> needs to be executed **after** prehtml-loader:
-
-```js
-<!-- webpack.config.js -->
-var path = require('path');
-
-module.exports = {
-
-	module: {
-		rules: [{
-			enforce: 'post',
-			test: /\.html$/,
-			use: ['html-loader?interpolate'],
-		}, {
-			test: /\.html$/,
-			use: ['prehtml-loader'],
-		}
-	]},
-	entry: './foo.js',
-	output: {
-		path: path.resolve(__dirname, 'dist'),
-		filename: 'foo.bundle.js'
-	}
-};
-```
-
-```html
-<!-- foo.html -->
-<script>let x = ${10 + ${scope.value}};</script>
-```
-
-```js
-<!-- foo.js -->
-import './foo.html?value=42';
-// => <script>let x = 52;</script>
-```
-
-<h3>import/require in HTML file</h3>
-
-You can also send parameters to required sub html files:
-
-
-```html
-<!-- subfoo.html -->
-<a>${scope.link}</a>
-```
-
-```js
-<!-- foo.js -->
-import './foo.html>value=42';
-// => <div><a>52</a><div>
-```
-
-Example 1 (with require):
-
-```html
-<!-- foo.html -->
-<div>${required('prehtml-loader?link=${scope.value + 10}!./subfoo.html')}</div>
-```
-
-Example 2 (with import):
-
-prehtml-loader transform import into require.
-
-```html
-<!-- foo.html -->
-<div>${import './subfoo.html?link=${scope.value + 10}'}</div>
-```
-
-<h3>Disable import transformation</h3>
-
-You can disable this features by adding a IMPORT_SUPPORT=false option.
-
-Example 1 (in webpack.config.js):
-```js
-<!-- webpack.config.js -->
-//...
-	use: ['prehtml-loader?IMPORT_SUPPORT=false'],
-//...
-```
-
-Example 2 (with require):
-
-```js
-<!-- foo.js -->
-require('!prehtml-loader?IMPORT_SUPPORT=false!./foo.html');
-//...
-```
-
-Example 3 (with import):
-
-```js
-<!-- foo.js -->
-import '!prehtml-loader?IMPORT_SUPPORT=false!./foo.html';
-```
-
-<h2>Usage (with file-loader)</h2>
-
-<a href='https://github.com/webpack-contrib/file-loader'>file-loader</a> enables to create files into the output directory.
-We suggest to create new html files only when required in a .js file.
-
-```js
-<!-- webpack.config.js -->
-var path = require('path');
-
-module.exports = {
-
-	module: {
-		rules: [{
-			issuer: {test: /\.js$/},
-			enforce: 'post',
-			test: /\.html$/,
-			use: ['file-loader?name=[name].[ext]', 'extract-loader', 'html-loader?interpolate']
-		}, {
-			issuer: {exclude: /\.js$/},
-			enforce: 'post',
-			test: /\.html$/,
-			use: ['html-loader?interpolate']
-		}, {
-		    test: /\.html$/,
-		    use: 'prehtml-loader'
+	return {
+		module: {
+			rules: [{
+				enforce: 'post',
+				test: /\.html$/,
+				use: {
+					loader: 'file-loader',
+					options: {
+						outputPath: './../', // required
+						name: dst_path
+					}
+				}
+			},{
+				test: /\.html$/,
+				use: ['prehtml-loader'],
+			}
+		]},
+		entry: { 
+			main: src
 		},
-	]},
-	entry: './foo.js',
-	output: {
-		path: path.resolve(__dirname, 'dist'),
-		filename: 'foo.bundle.js'
+		output: {
+			path: path.resolve(__dirname, 'out'),
+			publicPath: '',
+			filename: `${dst_path}.junk`,
+			//clean: true
+		}
+	};
+};
+
+let js_config = (dst_path, src) => {  // write here how you want JS files to be build.
+
+	return {
+		module: {},
+		entry: {
+			main: src
+		},
+		output: {
+			path: path.resolve(__dirname),
+			publicPath: '',
+			filename: dst_path,
+			//clean: true
+		}
+	};
+};
+
+module.exports = build_website(website, html_config, js_config);
+```
+
+<h3>Step 3: Write an HTML file !</h3>
+
+```
+// ./src/error/index.html
+You got an error !
+
+Error {{code}} // contents inside {{}} are evaluated.
+
+{{let message = ''; if(error == 403) message = 'Forbidden !'; message}} // prints 'Forbidden !' if the code is 403.
+
+<div class='message'></div>
+```
+
+<h2>Components</h2>
+
+<h3>Step 1: Create a component</h3>
+
+```
+// ./src/component/index.html
+<div>Hello ! I am {{name}}</div>
+```
+
+<h3>Step 2: includes your component</h3>
+
+```
+// ./src/home/index.html
+<component template='../component' name='{{name}}'></component> // use '' to surround the value.
+```
+
+<h2>With templates ;)</h2>
+
+<h3>Step 1: Write your template</h3>
+
+```
+<html>
+	<head>
+		<title>{{title}}</title>
+	</head>
+	<header>My header</header>
+	<component template='{{page}}' __args='{{args}}'></component> // includes the page content
+	// __args enables to set all arguments at once.
+	// {{__args}} can also be used, it contains all arguments given to the page.
+	<footer>My footer</footer>
+</html>
+```
+
+<h3>Step 2: Add your template to your website</h3>
+
+```
+// ./src/main.js
+module.exports = {
+
+	templates_input_dir: `${__dirname}/`, // __dirname required
+	templates: {
+		__default:{ // the default template
+			__src: 'template',
+			__args: {
+				title: 'Error'
+			}
+		},
+		template2:{ // another template (optionnal)
+			__src: 'template',
+			__args: {
+				title: 'Home'
+			}
+		}
+	},
+
+	pages_input_dir: './src/', // optionnal
+	pages_output_dir: './dist/pages/', // optionnal
+	pages: {
+		home: { __src: 'home', __args: { name: 'Denis Migdal' }, __template: 'template2' }, // use the template2 for this page.
+		error_404: { __src: 'error', __args: { code: 404 } }, // use the default template
+		error_403: { __src: 'error', __args: { code: 403 }, __template_args: {title: 'Error 403'} }, // use the default template and override its arguments
+		demos: { // this is a directory
+			demo_1: {__src: 'demos/demo_1', _template: 'none'}, // don't use a template for this page
+			demo_2: {__src: 'demos/demo_2', __template: 'none',} // don't use a template for this page
+		}
+	}
+
+};
+```
+
+
+
+<h2>Pre-processings</h2>
+
+Just put a JS file named as the html file you which to preprocess.
+```
+// ./src/error/index.html.js
+
+module.exports = {
+
+	prerender: function($, options) { // use it to modify the current html file before the components has been included.
+
+		let message = '';
+		if( options.code == 404 )
+			message = 'not found';
+
+		$('.message').text( message ); // JQuery interface.
+	}
+
+	render: function($, options) { // use it to modify the current html file after the components has been included.
+		// ...
 	}
 };
 ```
 
-```html
-<!-- foo.html -->
-<div>${ import './subfoo.html?link=${scope.value + 10}'}</div>
+
+<h2>Using it with html-loader</h2>
+
+```
+rules: [{
+	enforce: 'post',
+	test: /\.html$/,
+	use: {
+		loader: 'file-loader',
+		options: {
+			outputPath: './../', // required
+			name: dst_path
+		}
+	}
+},{
+	test: /\.html$/,
+	// put your html-loader configuration here.
+	// note: you may need to use extract-loader after html-loader.
+},{
+	test: /\.html$/,
+	use: ['prehtml-loader'],
+}]
 ```
 
-```html
-<!-- subfoo.html -->
-<a>${scope.link}</a>
-```
-
-```js
-<!-- foo.js -->
-import './foo.html?value=42';
-```
-
-Produces foo.html file in /dist directory.
-
-<h3>HTML Templates</h3>
-
-The special option TEMPLATE_CONTENT enables you to build HTML template.
-`relpath:` before an option value transforms a relative path to an absolute path.
-In this example, we put the page parameters into the variable `scope.TCA`.
-Please note that `scope.TCA` is in JSON format.
-
-```html
-<!-- foo.html -->
-<div>${scope.data}: ${scope.value}</div>
-```
-
-```html
-<!-- template.html -->
-<html>${ import '${scope.TEMPLATE_CONTENT}?${scope.TCA}' }</html>
-```
-
-```js
-<!-- foo.js -->
-import './template.html?TEMPLATE_CONTENT=relpath:./foo.html&TCA.value=10&TCA.data=world}';
-```
-
-Outputs a foo.html file in /dist directory:
-```html
-<!-- foo.html -->
-<html><div>world: 10</div></html>
-```
