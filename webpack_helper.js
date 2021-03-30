@@ -28,8 +28,6 @@ function make_uri({__src, __args = {}, __template_args, __template} = {}, templa
 
 		__args.__template = `${templates_input_dir}${template_options.__src}`;
 		__args.__template_args = Object.assign({}, template_options.__args, __template_args);
-
-		console.log(__template_args);
 	}
 
 	return `${pages_input_dir}${__src}/index.html?${JSON.stringify(__args)}`;
@@ -63,6 +61,20 @@ module.exports = {
 			if( js_uri )
 				config.push( js_config(js_output, js_uri ) );
 		}
+
+		if(website.templates)
+			for(let template in website.templates) {
+
+				let js_uri = website.templates_input_dir + '/' + website.templates[template].__src + '/main.js';
+
+				if( ! fs.existsSync(js_uri) )
+					continue;
+
+				let output_dir = website.templates_output_dir ?? '';
+				let js_output = `${output_dir}${template}/bundle.js`;
+
+				config.push( js_config(js_output, js_uri ) );
+			}
 
 
 		return config;
