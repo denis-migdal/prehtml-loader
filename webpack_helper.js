@@ -19,7 +19,7 @@ function * getPages(website_pages, prefix = '') {
 }
 
 
-function make_uri({__src, __args = {}, __template} = {}, templates, pages_input_dir, templates_input_dir) {
+function make_uri({__src, __args = {}, __template_args, __template} = {}, templates, pages_input_dir, templates_input_dir) {
 
 	if( templates && __template !== 'none') {
 
@@ -27,7 +27,9 @@ function make_uri({__src, __args = {}, __template} = {}, templates, pages_input_
 		let template_options = templates[template_name];
 
 		__args.__template = `${templates_input_dir}${template_options.__src}`;
-		__args.__template_args = template_options.__args;
+		__args.__template_args = Object.assign({}, template_options.__args, __template_args);
+
+		console.log(__template_args);
 	}
 
 	return `${pages_input_dir}${__src}/index.html?${JSON.stringify(__args)}`;
