@@ -125,7 +125,7 @@ async function templateRedir(pthis, options, {htmlPath, rootHtmlPath, isRootComp
 	let pagePath = htmlPath;
 
 	let template = options.__template;
-	let template_opts = options.__template_args;
+	let template_opts = options.__template_args ?? {};
 	
 	delete options.__args;
 	delete options.__template;
@@ -219,3 +219,4 @@ module.exports = function (html, map, meta) {
 		callback(null, html, map, meta);
 	});
 }
+

@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 
 function * getPages(website_pages, prefix = '') {
 
@@ -33,7 +35,7 @@ function make_uri({__src, __args = {}, __template} = {}, templates, pages_input_
 
 function make_jsuri({__src, __args}, pages_input_dir) {
 
-	if(false)
+	if( ! fs.existsSync(`${pages_input_dir}${__src}/main.js`) )
 		return false;
 
 	return `${pages_input_dir}${__src}/main.js`;
@@ -64,3 +66,4 @@ module.exports = {
 		return config;
 	}
 }
+
