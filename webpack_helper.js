@@ -13,9 +13,6 @@ function * getPages(website_pages, prefix = '') {
 
 		yield* getPages(website_pages[page], `${prefix}${page}/`); // get subpages
 	}
-
-
-	return;
 }
 
 
@@ -43,7 +40,28 @@ function make_jsuri({__src, __args}, pages_input_dir) {
 
 module.exports = {
 
-	build_website: function (website, html_config, js_config) {
+
+	list_html_index_files: function* list_html_index_files(dir, root_dir = dir) {
+
+		for(let file of fs.readdirSync(dir) ) {
+
+			let path = `${dir}/${file}`;
+
+			if( file === 'index.html' ) {
+
+				path = path.slice( 0, - '/index.html'.length );
+				let name = path.slice( root_dir.length );
+
+				yield [name, path];
+
+				continue;
+			}
+			if( fs.lstatSync(path).isDirectory() )
+				yield * list_html_index_files(path, root_dir);
+		}
+	},
+
+	build_website: function (website, html_config, js_config, webpack_plugins = null) {
 
 		let pages_input_dir = website.pages_input_dir ?? '';
 		let pages_output_dir = website.pages_output_dir ?? '';
@@ -84,6 +102,14 @@ module.exports = {
 				config.push( js_config(js_output, js_uri, html_targets ) );
 			}
 
+
+		if( webpack_plugins?.length > 0 ) {
+
+			let last_config = config[config.length-1];
+			last_config.plugins = last_config.plugins ?? [];
+
+			last_config.plugins.push(...webpack_plugins);
+		}
 
 		return config;
 	}
