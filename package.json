@@ -1,6 +1,6 @@
 {
   "name": "prehtml-loader",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Easily creates static HTML pages at build time using templates, components, interpolations, and/or preprocessings. No JS required and nothing new to learn ;)",
   "main": "index.js",
   "scripts": {
