@@ -1,9 +1,10 @@
 module.exports = {
 
-
 	component_builder: ($, name, args, children = []) => {
 
-		let component = $(`<component template='${name}' __args='${ JSON.stringify(args) }'></component>`);
+		let component = $(`<component template='${name}'></component>`);
+
+		component.attr('__args', JSON.stringify(args));
 
 		component.append(children);
 

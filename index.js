@@ -5,6 +5,11 @@ const fs = require('fs');
 
 var loaderUtils = require("loader-utils");
 
+
+function htmlentities(str) {
+	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function getOptions(pthis) {
 
 	let options = loaderUtils.getOptions(pthis) || {};
@@ -112,7 +117,8 @@ async function importComponents(pthis, $, context) {
 			options = Object.assign({}, args, options);
 		}
 
-		options.__children = children;
+		if( children)
+			options.__children = children;
 
 		options.__args = JSON.parse( JSON.stringify(options) );
 
