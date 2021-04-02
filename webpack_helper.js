@@ -72,7 +72,7 @@ module.exports = {
 
 		for(let [dst, args] of getPages(website.pages) ) {
 			let output = `${pages_output_dir}${dst}/index.html`;
-			config.push( html_config(output, make_uri(args, website.templates, pages_input_dir, website.templates_input_dir) ) );
+			config.push( ... html_config(output, make_uri(args, website.templates, pages_input_dir, website.templates_input_dir) ) );
 	
 
 			let js_uri = make_jsuri(args, pages_input_dir);
@@ -83,7 +83,7 @@ module.exports = {
 				templates_usage[template_name]?.push(output) || (templates_usage[template_name] = [output]);
 
 			if( js_uri )
-				config.push( js_config(js_output, js_uri, [output] ) );
+				config.push( ... js_config(js_output, js_uri, [output] ) );
 		}
 
 		if(website.templates)
@@ -99,7 +99,7 @@ module.exports = {
 
 				let html_targets = templates_usage[template];
 
-				config.push( js_config(js_output, js_uri, html_targets ) );
+				config.push( ... js_config(js_output, js_uri, html_targets ) );
 			}
 
 
@@ -114,5 +114,6 @@ module.exports = {
 		return config;
 	}
 }
+
 
 
