@@ -51,7 +51,10 @@ async function resolve(pthis, name, context) {
 
 async function importComponents(pthis, $, context) {
 
-	for(let elem of $.find('component') ) {
+	for(let elem of $.find('component').reverse() ) {
+
+
+		let children = elem.innerHTML;
 
 		let options = {};
 
@@ -108,6 +111,8 @@ async function importComponents(pthis, $, context) {
 			delete options.__args;
 			options = Object.assign({}, args, options);
 		}
+
+		options.__children = children;
 
 		options.__args = JSON.parse( JSON.stringify(options) );
 
