@@ -5,6 +5,8 @@ const fs = require('fs');
 
 var loaderUtils = require("loader-utils");
 
+let {component_builder} = require('prehtml-loader/preproc_helper.js');
+
 
 function htmlentities(str) {
 	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -24,6 +26,10 @@ function getOptions(pthis) {
 
 /** replace scope variables **/
 async function parse(pthis, html, options) {
+
+	let jhtml = new jsdom.JSDOM('');
+	global.document = jhtml.window.document;
+	let $ = jquery_builder(jhtml.window);
 
 	let pre = Object.entries(options).map( e => `let ${e[0]} = ${JSON.stringify(e[1])};` );
 
