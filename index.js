@@ -24,7 +24,7 @@ async function parse(pthis, html, options) {
 
 	pre = pre.join('');
 
-	return html.replace(/\{\{([^}]*)}}/g, (r,script) => {
+	return html.replace(/\{\{(((?!\}\}).)*)\}\}/gs, (r,script) => {
 
 		let result = eval(pre + script);
 
@@ -144,8 +144,8 @@ function insertScriptElement(pthis, $, dir) {
 
 	if( ! fs.existsSync(`${dir}/main.js`) )
 		return;
-
-	let script = $(`<script src='./bundle.js' defer="defer" />`);
+	// defer="defer" 
+	let script = $(`<script src='./bundle.js'/>`);
 	$('head')[0].appendChild( script[0] ); // dunno why JQuery is adding the script twice...
 	//$('head').eq(0).append( script[0] );
 }
@@ -219,4 +219,5 @@ module.exports = function (html, map, meta) {
 		callback(null, html, map, meta);
 	});
 }
+
 
