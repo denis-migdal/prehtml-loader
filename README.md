@@ -20,6 +20,7 @@ npm i -D prehtml-loader
 <h2>Examples</h2>
 
 Websites using prehtml-loader:
+* https://github.com/denis-migdal/migdal.ovh
 * https://github.com/denis-migdal/keystroke.fr
 
 See the directory /examples for some more advanced usage examples.
