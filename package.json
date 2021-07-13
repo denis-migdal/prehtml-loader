@@ -1,6 +1,6 @@
 {
   "name": "prehtml-loader",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "Easily creates static HTML pages at build time using templates, components, interpolations, and/or preprocessings. No JS required and nothing new to learn ;)",
   "main": "index.js",
   "scripts": {
@@ -26,6 +26,7 @@
   "dependencies": {
     "jquery": "^3.4.1",
     "jsdom": "^16.1.0",
-    "loader-utils": "^1.2.3"
+    "loader-utils": "^1.2.3",
+    "webpack-framework": "^0.0.2"
   }
 }

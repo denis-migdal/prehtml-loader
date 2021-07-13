@@ -5,7 +5,7 @@ const fs = require('fs');
 
 var loaderUtils = require("loader-utils");
 
-let {component_builder} = require('prehtml-loader/preproc_helper.js');
+let component_builder = require('./src/preproc/component_builder.js');
 
 
 function htmlentities(str) {
@@ -159,12 +159,21 @@ async function templateRedir(pthis, options, {htmlPath, rootHtmlPath, isRootComp
 
 function insertScriptElement(pthis, $, dir) {
 
-	if( ! fs.existsSync(`${dir}/main.js`) )
+	if( ! fs.existsSync(`${dir}/index.js`) )
 		return;
 	// defer="defer" 
-	let script = $(`<script src='./bundle.js'/>`);
+	let script = $(`<script src='./index.js' defer='defer' />`);
 	$('head')[0].appendChild( script[0] ); // dunno why JQuery is adding the script twice...
 	//$('head').eq(0).append( script[0] );
+}
+
+function insertCSSElement(pthis, $, dir) {
+ 
+ 	if( ! fs.existsSync(`${dir}/index.css.js`) && ! fs.existsSync(`${dir}/index.css`) )
+ 		return;
+ 
+ 	let css = $(`<link rel='stylesheet' href='./index.css' />`);
+ 	$('head')[0].appendChild( css[0] ); // cf insertScriptElement.
 }
 
 
@@ -193,6 +202,7 @@ async function renderHTML(pthis, html, options, {htmlPath, rootHtmlPath, isRootC
 	if( isRootComponent ) {
 		let jsdir = rootHtmlPath.split('/').slice(0, -1).join('/');
 		insertScriptElement(pthis, $, jsdir);
+		insertCSSElement(pthis, $, jsdir);
 	}
 
 

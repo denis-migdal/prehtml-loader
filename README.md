@@ -17,6 +17,8 @@ No JS required and nothing new to learn ;)<p>
 npm i -D prehtml-loader
 ```
 
+<strong>Documentation is obsolete (2021/07/13), please wait new documentation</strong>
+
 <h2>Examples</h2>
 
 Websites using prehtml-loader:
