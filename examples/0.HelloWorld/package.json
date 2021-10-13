@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "build": "clear ; rm -rf ./dist/dev/ ; webpack  --mode=development",
     "webserver": "browser-sync start --server --no-online --watch --ss ./dist/dev"

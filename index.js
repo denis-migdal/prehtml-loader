@@ -60,81 +60,91 @@ async function resolve(pthis, name, context) {
 	return await pthis.getResolve( pthis._compilation.options.resolve )(context, name);
 }
 
-async function importComponents(pthis, $, context) {
+async function replaceComponent(pthis, $, context, elem) {
 
-	for(let elem of $.find('component').reverse() ) {
+	let children = elem.innerHTML;
 
+	let options = {};
 
-		let children = elem.innerHTML;
+	let attr = elem.attributes;
 
-		let options = {};
+	for(let i = 0; i < attr.length; ++i)
+		options[attr[i].name] = attr[i].value;
 
-		let attr = elem.attributes;
+	let template = options.template;
+	delete options.template;
 
-		for(let i = 0; i < attr.length; ++i)
-			options[attr[i].name] = attr[i].value;
-
-		let template = options.template;
-		delete options.template;
-
-		function addField(target, name_parts, value) {
+	function addField(target, name_parts, value) {
 
 
-			let dir = name_parts[0];
+		let dir = name_parts[0];
 
-			let obj = target[dir] = target[dir] ?? {};
+		let obj = target[dir] = target[dir] ?? {};
 
-			if( name_parts.length == 2)
-				obj[name_parts[1]] = value;
-			else
-				addField(obj, name_parts.slice(1), value);
-		}
-
-
-		function parseField(value) {
-
-			try { //if JSON.parse fails, then it's a string.
-				return JSON.parse(value);
-			} catch(e){
-
-
-				console.log('Parse Error', value);
-			}
-
-			return value;
-		}
-
-		//Parse value...
-		for(let name in options) {
-
-			if( ! name.includes('.') ) {
-				options[name] = parseField(options[name]);
-				continue;
-			}
-
-			addField(options, name.split('\.'), parseField(options[name]) );
-
-			delete options[name];
-		}
-
-		if( '__args' in options) {
-			let args = options.__args;
-			delete options.__args;
-			options = Object.assign({}, args, options);
-		}
-
-		if( children)
-			options.__children = children;
-
-		options.__args = JSON.parse( JSON.stringify(options) );
-
-		let path = await resolve(pthis, `${template}/index.html`, context);
-		let content = fs.readFileSync(path, 'utf8');
-		
-		content = await run(pthis, content, options, { htmlPath: path});
-		$(elem).replaceWith( $.parseHTML(content) );
+		if( name_parts.length == 2)
+			obj[name_parts[1]] = value;
+		else
+			addField(obj, name_parts.slice(1), value);
 	}
 
+
+	function parseField(value) {
+
+		try { //if JSON.parse fails, then it's a string.
+			return JSON.parse(value);
+		} catch(e){
+			// Not JSON
+			//console.log('Parse Error', value);
+		}
+
+		return value;
+	}
+
+	//Parse value...
+	for(let name in options) {
+
+		if( ! name.includes('.') ) {
+			options[name] = parseField(options[name]);
+			continue;
+		}
+
+		addField(options, name.split('\.'), parseField(options[name]) );
+
+		delete options[name];
+	}
+
+	if( '__args' in options) {
+		let args = options.__args;
+		delete options.__args;
+		options = Object.assign({}, args, options);
+	}
+
+	if( children)
+		options.__children = children;
+
+	options.__args = JSON.parse( JSON.stringify(options) );
+
+	let path = await resolve(pthis, `${template}/index.html`, context);
+	let content = fs.readFileSync(path, 'utf8');
+	
+	content = await run(pthis, content, options, { htmlPath: path});
+
+	$(elem).replaceWith( $.parseHTML(content) );
+}
+
+async function importComponents(pthis, $, context) {
+
+	for( let template of $.find('template') ) {
+
+		let content = $(template.content.firstElementChild); //.querySelectorAll('component').reverse();
+
+		for(let elem of [... content.find('component')].reverse() )
+			await replaceComponent(pthis, $, context, elem);
+
+	}
+
+	for(let elem of $.find('component').reverse() )
+		await replaceComponent(pthis, $, context, elem);
 }
 
 async function templateRedir(pthis, options, {htmlPath, rootHtmlPath, isRootComponent}) {
